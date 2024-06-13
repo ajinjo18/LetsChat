@@ -1,0 +1,8 @@
+.scroll-container {
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}

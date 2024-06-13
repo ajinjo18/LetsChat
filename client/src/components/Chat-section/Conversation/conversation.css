@@ -1,0 +1,12 @@
+.scrollableDiv {
+    margin-top: 5px;
+    overflow: auto;
+    max-height: 80vh;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* Hide scrollbar for WebKit-based browsers (Chrome, Safari) */
+.scrollableDiv::-webkit-scrollbar {
+    display: none;
+}

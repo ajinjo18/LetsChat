@@ -1,0 +1,114 @@
+
+  .app-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .post-container {
+    border-radius: 3px;
+    max-width: 500px;
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .post-header {
+    display: flex;
+    align-items: center;
+    padding: 0 16px 16px 16px;
+  }
+  
+  .avatar {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .user-info {
+    margin-left: 12px;
+  }
+  
+  .username {
+    font-weight: 600;
+    display: block;
+  }
+  
+  .location {
+    color: #8e8e8e;
+    font-size: 12px;
+  }
+
+  .time{
+    color: #8e8e8e;
+    font-size: 12px;
+    margin-top: -15px;
+  }
+  
+  .post-image {
+    width:80%;
+    object-fit: cover;
+  }
+  
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+  }
+  
+  .left-actions,
+  .right-actions {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .likes {
+    font-weight: 600;
+    padding: 0 16px 0;
+  }
+  
+
+
+
+  .modal-custom {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .modal-body-content {
+    display: flex;
+    flex-direction: row;
+    /* height: 100vh; */
+  }
+  
+  .image-section {
+    width: 50%;
+    height: 70vh;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .comments-section {
+    width: 50%;
+    /* height: 100vh; */
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .modal-body-content {
+      flex-direction: column;
+    }
+  
+    .image-section, .comments-section {
+      width: 100%;
+      height: auto;
+    }
+  }
+  

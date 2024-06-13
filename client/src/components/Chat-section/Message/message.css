@@ -1,0 +1,44 @@
+/* Chat bubble base styling */
+.chat-bubble {
+  max-width: 60%;
+  padding: 5px;
+  margin: 5px 0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* User's messages aligned to the right */
+.chat-bubble.user {
+  align-self: flex-end;
+  background-color: transparent; /* No background for the bubble, only border for text */
+}
+
+/* Bot's messages aligned to the left */
+.chat-bubble.bot {
+  align-self: flex-start;
+  background-color: transparent; /* No background for the bubble, only border for text */
+}
+
+/* Text within the message bubbles */
+.message-text {
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid #d3d3d3;
+  border-radius: 10px;
+}
+
+/* User's text styling */
+.user .message-text {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+  text-align: right;
+}
+
+/* Bot's text styling */
+.bot .message-text {
+  background-color: #e5e5ea;
+  color: black;
+  text-align: left;
+}

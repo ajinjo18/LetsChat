@@ -1,0 +1,12 @@
+.spinner-container {
+    position: fixed; /* Position the container relative to the viewport */
+    top: 50%; /* Position the top of the container at the vertical center */
+    left: 50%; /* Position the left of the container at the horizontal center */
+    transform: translate(-50%, -50%); /* Move the container to center completely */
+    z-index: 1000; /* Ensure spinner is above other content */
+  }
+  
+  .spinner {
+    /* Add any additional styling for the spinner itself if needed */
+  }
+  

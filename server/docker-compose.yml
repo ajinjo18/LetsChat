@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  mongo_db:
+    container_name: database_container
+    image: mongo:4.4
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+    networks:
+      - app_network
+
+  app:
+    build: .
+    ports:
+      - 3001:3001
+    environment:
+      PORT: 3001
+      EMAIL: letschat8055@gmail.com
+      PASSWORD: eujo xwjv khbp qbzv
+      SECRET_KEY: dyhevfvfbfhdejjm
+      ACCESS_TOKEN_SECRET: ajajajajkkfigrgb
+      REFRESH_TOKEN_SECRET: xyxydhuisbsrbgbbb
+      ADMIN_EMAIL: ajinjo
+      ADMIN_PASSWORD: ajinjo
+      MONGO_URI: mongodb://mongo_db:27017/letschat
+    depends_on:
+      - mongo_db
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_container
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/ssl/nginx
+    depends_on:
+      - app
+    networks:
+      - app_network
+        
+volumes:
+  mongo_db: {}
+
+networks:
+  app_network:
+    driver: bridge
