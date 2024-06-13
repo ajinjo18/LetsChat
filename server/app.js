@@ -22,14 +22,14 @@ const app = express()
 const server = http.createServer(app)
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://www.letschat.digital',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true
 }))
 
 const io = socketio(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: 'https://www.letschat.digital',
       methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
       credentials: true
     }
@@ -80,7 +80,6 @@ io.on('connection', (socket) => {
 
 
     socket.on('signal', (data) => {
-        console.log('data', data)
         const { signal, to } = data;
         const receiverSocketId = userSocketMap[to];
         if (receiverSocketId) {
@@ -91,7 +90,6 @@ io.on('connection', (socket) => {
     socket.on('endCall', (data) => {
         const { to } = data;
         const receiverSocketId = userSocketMap[to];
-        console.log('End call received:', data);
         io.to(receiverSocketId).emit('endCall');
       });
 
@@ -99,14 +97,10 @@ io.on('connection', (socket) => {
 
 
     socket.on('sendMessage', async({ sender, receiver, message }) => {
-        console.log('sender, receiver, message', sender, receiver, message);
-        console.log('userSocketMap', userSocketMap)
-
+ 
         const newMessage = new Message(message);
 
         const savedMessage = await newMessage.save();
-
-        console.log('conversationId', message.conversationId)
 
         await Conversation.findOneAndUpdate(
             { _id: message.conversationId },
@@ -141,9 +135,7 @@ io.on('connection', (socket) => {
 
     
     socket.on('typingStatus',({sender, receiver, text}) => {
-        console.log('typingStatus',sender, receiver)
         const receiverSocketId = userSocketMap[receiver];
-        console.log('receiverSocketIdiiii', receiverSocketId)
         if(receiverSocketId){
             if(text !== ''){
                 io.to(receiverSocketId).emit('receivedTypingStatus',{sender, receiver});
@@ -186,7 +178,6 @@ io.on('connection', (socket) => {
                 io.to(receiverSocketId).emit('notification', { notification:'liked post' });
                 
             } else {
-                console.log(`Post ${id} unliked by user ${userId}`);
                 await postCollection.findByIdAndUpdate(id, { $pull: { likes: userId } });
                 const result = await userCollection.findByIdAndUpdate(
                     updatedPost.userId._id,
@@ -303,7 +294,6 @@ io.on('connection', (socket) => {
     socket.on('followUser', async ({ userId, id }) => {
         try {        
             if (!userId || !id) {
-                console.log('Both userId and id are required. 11')
                 // return res.status(400).json({ error: 'Both userId and id are required.' });
                 return
             }
@@ -312,7 +302,6 @@ io.on('connection', (socket) => {
             const currentUser = await userCollection.findById(userId);
             if (!currentUser) {
                 // return res.status(404).json({ error: 'User not found.' });
-                console.log('User not found.')
                 return
             }
         
@@ -320,14 +309,12 @@ io.on('connection', (socket) => {
             const userToFollow = await userCollection.findById(id);
             if (!userToFollow) {
                 // return res.status(404).json({ error: 'User to follow not found.' });
-                console.log('User to follow not found.')
                 return
             }
         
             // Check if the user is already being followed
             if (currentUser.following.includes(id)) {
                 // return res.status(400).json({ error: 'You are already following this user.' });
-                console.log('You are already following this user.')
                 return
             }
         
@@ -348,7 +335,6 @@ io.on('connection', (socket) => {
                 isRead: false
             }
 
-            console.log('notification', notification)
             await userCollection.findByIdAndUpdate(id, { $push: { notifications: notification } });
             
             const receiverSocketId = userSocketMap[id];
@@ -362,12 +348,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on('unfollowUser', async ({ userId, id }) => {
-        console.log('2222', userId, id)
         try {
             const unfollowedUserId = id;
     
             if (!userId || !id) {
-                console.log('Both userId and id are required 22.')
                 return
                 // return res.status(400).json({ error: 'Both userId and id are required.' });
             }
@@ -375,7 +359,6 @@ io.on('connection', (socket) => {
             // Find the current user who wants to unfollow
             const currentUser = await userCollection.findById(userId);
             if (!currentUser) {
-                console.log('User not found.')
                 return
                 // return res.status(404).json({ error: 'User not found.' });
             }
@@ -383,14 +366,12 @@ io.on('connection', (socket) => {
             // Find the user to be unfollowed
             const userToUnfollow = await userCollection.findById(unfollowedUserId);
             if (!userToUnfollow) {
-                console.log('User to unfollow not found.')
                 return
                 // return res.status(404).json({ error: 'User to unfollow not found.' });
             }
     
             // Check if the current user is already not following the user
             if (!currentUser.following.includes(unfollowedUserId)) {
-                console.log('You are not following this user.')
                 return
                 // return res.status(400).json({ error: 'You are not following this user.' });
             }
@@ -426,30 +407,25 @@ io.on('connection', (socket) => {
     })
 
     socket.on('removeFollower', async ({ userId, followerId }) => {
-        console.log('Removing follower:', userId, followerId);
         try {
             if (!userId || !followerId) {
-                console.log('Both userId and followerId are required.');
                 return;
             }
     
             // Find the current user
             const currentUser = await userCollection.findById(userId);
             if (!currentUser) {
-                console.log('Current user not found.');
                 return;
             }
     
             // Find the follower user
             const followerUser = await userCollection.findById(followerId);
             if (!followerUser) {
-                console.log('Follower user not found.');
                 return;
             }
     
             // Check if the follower user is in the followers list
             if (!currentUser.followers.includes(followerId)) {
-                console.log('This user is not your follower.');
                 return;
             }
     
@@ -478,7 +454,6 @@ io.on('connection', (socket) => {
             const receiverSocketId = userSocketMap[followerId];
             io.to(receiverSocketId).emit('notification', { notification: 'Follower removed successfully.' });
     
-            console.log('Follower removed successfully.');
         } catch (error) {
             console.error('Error removing follower:', error);
         }
