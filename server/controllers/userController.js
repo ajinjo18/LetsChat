@@ -332,23 +332,25 @@ const mediaUpload = async(req,res) => {
     res.json({ filePath: req.file.filename });
 }
 
-const forgetPassword = async(req,res) => {
-    const {email} = req.body
+
+const forgetPassword = async (req, res) => {
+    const { email } = req.body;
     try {
-        const user = await userCollection.findOne({email})
-
-        if(!user){
-            return res.status(404).json({ message: 'Invalid User' });
-        }
-        forgetOtpToEmail(email)
-        const token = jwt.sign({ forgetEmail: email }, process.env.SECRET_KEY, { expiresIn: '1h' });
-        return res.status(200).json({message:'User Exist', token})
-    } 
-    catch (error) {
-        console.log(error.message);
+      const user = await userCollection.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Invalid User' });
+      }
+  
+      forgetOtpToEmail(email);
+      const token = jwt.sign({ forgetEmail: email }, process.env.SECRET_KEY, { expiresIn: '1h' });
+      return res.status(200).json({ message: 'User Exist', token });
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ message: 'Server error' });
     }
-
-}
+  };
+  
 
 
 const forgetPasswordOtp = async(req,res) => {

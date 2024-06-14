@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import{ baseUrl } from '../../../utils/baseUrl'
 import{ errorMessage } from '../../../utils/toaster'
+import axios from 'axios';
 
 
 const ForgetPassword = () => {
@@ -11,27 +12,31 @@ const ForgetPassword = () => {
 
   const navigate = useNavigate()
 
-  const verify =  (e) => {
-    e.preventDefault()
-    if(email){
-      fetch(`${baseUrl}/user/forget-password`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({email}),
-      })
-      .then(response => response.json())
-      .then(res => {
-        if(res.message === 'Invalid User'){
-          errorMessage('Invalid User')
+  const verify = async (e) => {
+    e.preventDefault();
+    if (email) {
+      try {
+        const response = await axios.patch(`${baseUrl}/user/forget-password`, { email }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        const res = response.data;
+  
+        if (res.message === 'Invalid User') {
+          errorMessage('Invalid User');
         }
-        if(res.message === 'User Exist'){
-          localStorage.setItem('forgetEmailToken',res.token)
-          setEmail('')
-          navigate('/otp-forgetpassword')
+  
+        if (res.message === 'User Exist') {
+          localStorage.setItem('forgetEmailToken', res.token);
+          setEmail('');
+          navigate('/otp-forgetpassword');
         }
-      })
+      } catch (error) {
+        console.error('Error during request:', error);
+        // Handle error appropriately, e.g., show a user-friendly message
+      }
     }
   }
     
