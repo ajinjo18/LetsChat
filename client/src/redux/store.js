@@ -15,7 +15,8 @@ import roomSlice from './roomSlice/roomSlice';
 
 import isAdminLogged from './admin/isAdminLogged';
 import center from './admin/center';
-import themes from './admin/themes';
+import adminThemes from './admin/adminThemes';
+import themes from './theme/themes';
 
 const persistConfig = {
     key: 'root',
@@ -33,7 +34,7 @@ const persistedUserReducer = persistReducer(persistConfig, user);
 
 const persistedIsAdminReducer = persistReducer(adminPersistConfig, isAdminLogged);
 const persistedCenterReducer = persistReducer(adminPersistConfig, center);
-const persistedThemesReducer = persistReducer(adminPersistConfig, themes);
+const persistedThemesReducer = persistReducer(adminPersistConfig, adminThemes);
 
 const persistedReducers = {
     theme: persistedThemeReducer,

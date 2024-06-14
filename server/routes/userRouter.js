@@ -17,6 +17,12 @@ router.post('/resendOtp',signupController.resendOtp)
 router.post('/login', loginController.login)
 router.post('/google-login', loginController.googleLogin)
 
+router.patch('/forget-password', userController.forgetPassword)
+router.post('/forget-password-otp', userController.forgetPasswordOtp)
+router.post('/forget-password-resend-otp', userController.forgetPasswordResendOtp)
+router.patch('/new-password', userController.newPassword)
+
+
 router.post('/add-post-description', authenticateToken, postController.addPostDescription);
 router.post('/add-post', authenticateToken, upload.array('image'), postController.addPost);
 router.get('/home-feeds', authenticateToken, postController.homeFeeds);

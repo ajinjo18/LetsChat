@@ -5,7 +5,7 @@ import { CiLight } from "react-icons/ci";
 import { MdDarkMode } from "react-icons/md";
 
 import {darkMode, lightMode} from '../../../utils/themeConfig'
-import { toggleTheme } from '../../../redux/admin/themes'
+import { toggleTheme } from '../../../redux/admin/adminThemes'
 
 import Logout from '../logout/Logout'
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +18,6 @@ const Aside = ({role}) => {
     const navigate = useNavigate()
 
     const [colorMode, setColorMode] = useState(theme)
-
-    console.log('aside');
 
 
 

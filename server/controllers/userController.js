@@ -1,5 +1,51 @@
+const bcrypt = require('bcrypt')
+const nodemailer = require('nodemailer');
+const generateOTP = require('generate-otp');
+require('dotenv').config();
+const jwt = require('jsonwebtoken')
+
 const userCollection = require('../model/users')
 const postCollection = require('../model/post')
+
+
+// ---------------node mailer--------------
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    },
+});
+
+
+// ---------------forget password OTP function--------------
+const forgetOtpToEmail = async(email) => {
+    const otp = generateOTP.generate(6, { digits: true, alphabets: false, specialChars: false });
+
+    await userCollection.findOneAndUpdate({email:email},{$set:{otp}})
+
+    const mailOptions = {
+        from: 'letschat8055@gmail.com',
+        to: `${email}`,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is: ${otp}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log('Error sending email: ' + error);
+        }
+        else {
+            console.log('Email sent: ' + info.response);
+        }
+
+        setTimeout(async () => {
+            await userCollection.findOneAndUpdate({ email: email }, { $unset: { otp: "" } });
+        }, 5 * 60 * 1000); 
+        
+    });
+}
+
 
 const getUserData = async (req, res) => {
     const userId = req.user.id;
@@ -286,9 +332,105 @@ const mediaUpload = async(req,res) => {
     res.json({ filePath: req.file.filename });
 }
 
+const forgetPassword = async(req,res) => {
+    const {email} = req.body
+    try {
+        const user = await userCollection.findOne({email})
+
+        if(!user){
+            return res.status(404).json({ message: 'Invalid User' });
+        }
+        forgetOtpToEmail(email)
+        const token = jwt.sign({ forgetEmail: email }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        return res.status(200).json({message:'User Exist', token})
+    } 
+    catch (error) {
+        console.log(error.message);
+    }
+
+}
+
+
+const forgetPasswordOtp = async(req,res) => {
+
+    const {enteredOtp, forgetToken} = req.body
+    let forgetEmail
+
+    try {
+        jwt.verify(forgetToken, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+              console.error('Failed to verify token:', err.message);
+            } else {
+                forgetEmail = decoded.forgetEmail
+            }
+        });
+        const sendOtp = await userCollection.findOne({email:forgetEmail},{otp:1,_id:0})
+
+
+        if(!sendOtp){
+            return res.status(410).json({ message: 'errorOtp' });
+        }
+
+        if (enteredOtp == sendOtp.otp) {            
+            return res.status(201).json({message: 'OTP veryfied' });
+        }
+        else {
+            return res.status(400).json({message: 'errorOtp' });
+        }
+    } 
+    catch (error) {
+        console.log(error.message);
+    }
+
+}
+
+const forgetPasswordResendOtp = async(req,res) => {
+    try {
+        let forgetEmail;
+
+        const { forgetToken } = req.body;
+
+        jwt.verify(forgetToken, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+                console.error('Failed to verify token:', err.message);
+                return res.status(400).json({ message: 'Invalid token' });
+            } else {
+                forgetEmail = decoded.forgetEmail;
+            }
+        });
+        forgetOtpToEmail(forgetEmail);
+        return res.status(200).json({ message: 'OTP resent successfully' });
+
+    } 
+    catch (error) {
+        console.error('Error resending OTP:', error.message);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const newPassword = async(req,res) => {
+    const {password, forgetToken} = req.body
+    try {
+        jwt.verify(forgetToken, process.env.SECRET_KEY, async(err, decoded) => {
+            if (err) {
+              console.error('Failed to verify token:', err.message);
+            } else {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                await userCollection.findOneAndUpdate({ email: decoded.forgetEmail }, { $set: {password: hashedPassword} });
+                return res.status(200).json({ message: 'Password updated successfully' });
+            }
+        });
+        
+    } 
+    catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 module.exports = {
     getUserData, getUserDetails, allFollowing, suggestFriends, postLength, updateProfileImage, 
     update, updatePassword, userSearch, getNotifications, getOtherUserData, followers, following,
-    markAllAsRead, chatUserSearch, mediaUpload
+    markAllAsRead, chatUserSearch, mediaUpload, forgetPassword, forgetPasswordOtp, forgetPasswordResendOtp,
+    newPassword
 }

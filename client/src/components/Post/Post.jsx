@@ -153,10 +153,11 @@ const Post = ({ role, categoryId }) => {
         }
     }, [isLoading, hasMore, data.length]);
 
+
     return (
         <div>
             {
-                isNewPost && <PostCard item={newPost} role={role} deletePost={deletePost} removeSavedPost={removeSavedPost}/>
+                isNewPost && <PostCard item={isNewPost} role={role} deletePost={deletePost} removeSavedPost={removeSavedPost}/>
             }
             {data.map((item, index) => {
                 if (data.length === index + 1) {
