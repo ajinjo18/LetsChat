@@ -52,6 +52,7 @@ const Post = ({ role, categoryId }) => {
                 url = `/user/single-post?id=${sharedPostId}`;
                 const response = await axiosInstance.get(url)
                 setData(response.data);
+                console.log(response.data)
                 setIsLoading(false);
                 setHasMore(false)
                 return
@@ -136,6 +137,7 @@ const Post = ({ role, categoryId }) => {
       };
 
     useEffect(() => {
+        console.log('id', id)
         setData([]);
         fetchData(0);
     }, [role, userId, sharedPostId, id]);

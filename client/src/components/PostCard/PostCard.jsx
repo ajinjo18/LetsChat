@@ -63,6 +63,8 @@ const MyVerticallyCenteredModal = (props) => {
 
 const PostCard = ({ item, role, removeSavedPost, deletePost }, ref) => {
 
+    console.log('item', item)
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [modalShow, setModalShow] = React.useState(false);

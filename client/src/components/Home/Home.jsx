@@ -41,7 +41,13 @@ const Home = ({ role }) => {
           </div>
         ) 
       case "userProfile":
-        return <FriendProfileView />
+        return (
+          <>
+            <FriendProfileView />
+            <Post role={role} />
+          </>  
+        )
+        
       case "myProfile":
         return <MyProfileView />;
       case "security":
